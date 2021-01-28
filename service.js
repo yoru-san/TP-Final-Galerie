@@ -1,5 +1,6 @@
+const publicKey = "BBuliSqEe9KKtp2AxfHLzgv-e3iDjtL2L2nOFheosPEnT3L8JpG6aUXtmFndP-TQCr6TYQw5RckcszO4EjqnuCA";
+
 function getFavoris() {
-  console.log("Get Favoris");
   return fetch(`http://localhost:8080/favoris`)
     .then((response) => response.json())
     .then((json) => json)
@@ -9,7 +10,6 @@ function getFavoris() {
 }
 
 function getImages() {
-  console.log("Get Images");
   return fetch(`http://localhost:8080/images`)
     .then(function (response) {
       return response.json();
@@ -22,35 +22,14 @@ function getImages() {
     });
 }
 
-function toggleFavori(id, isFavori) {
-  var authorization;
+function toggleFavori(id) {
   return fetch(`http://localhost:8080/toggleFavori/${id}`, { method: "PUT" })
-    .then((res) => {
-      Notification.requestPermission().then(function (result) {
-        authorization = result;
-
-        var title, body;
-        if (isFavori == "false") {
-          title = "Favori ajouté";
-          body = "L'image a été ajouté en favori.";
-        } else {
-          title = "Favori retiré";
-          body = "L'image a été retiré des favori.";
-        }
-
-        if (authorization === "granted") {
-          new Notification(title, { body: body });
-        } else {
-          alert(body);
-        }
-      });
+    .then(() => {
     })
     .catch((err) => {
       console.log(err);
 
       localforage.getItem("favorisOutbox").then((data) => {
-        console.log("favorisOutbox");
-        console.log(data);
         if (data == null) {
           data = [];
         } else {
@@ -71,4 +50,57 @@ function toggleFavori(id, isFavori) {
         });
       });
     });
+}
+
+async function send() {
+  const register = await navigator.serviceWorker
+    .register("./sw.js", { updateViaCache: "none", scope: '/' });
+
+
+  register.addEventListener("updatefound", () => {
+    const installing = reg.installing;
+    installing.addEventListener("statechange", () => {
+      if (installing.state === "installed") {
+        console.log("Votre service worker a été mis à jour! Veuillez rafraîchir la page");
+      }
+    });
+  });
+
+  const subscription = await register.pushManager.subscribe({
+    userVisibleOnly: true,
+    applicationServerKey: urlBase64ToUint8Array(publicKey),
+  });
+
+  await fetch("http://localhost:8080/subscribe", {
+    method: "POST",
+    body: JSON.stringify(subscription),
+    headers: {
+      "content-type": "application/json"
+    }
+  });
+
+  if ("sync" in register) {
+    navigator.permissions.query({ name: "background-sync" })
+      .then((result) => {
+        if (result.state === "granted") {
+          console.log("sync ready");
+        }
+      });
+  }
+}
+
+
+function urlBase64ToUint8Array(base64String) {
+  const padding = "=".repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding)
+    .replace(/\-/g, "+")
+    .replace(/_/g, "/");
+
+  const rawData = window.atob(base64);
+  const outputArray = new Uint8Array(rawData.length);
+
+  for (let i = 0; i < rawData.length; ++i) {
+    outputArray[i] = rawData.charCodeAt(i);
+  }
+  return outputArray;
 }

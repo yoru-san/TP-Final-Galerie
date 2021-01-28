@@ -8,19 +8,12 @@ function reduireArray(array, size) {
 const dateTimeFormat = Intl.DateTimeFormat("fr");
 
 function afficher(json) {
-  console.log("Afficher:");
-  console.log(json);
-
   const selections = reduireArray(json, 4);
 
   let html = "";
 
   selections.forEach((selection) => {
     html += '<div class="columns">';
-    var favoris = getFavoris();
-
-    console.log("Selection:");
-    console.log(selection);
 
     selection.forEach((repo) => {
       html += `
@@ -46,21 +39,20 @@ function afficher(json) {
                   </div>
                   <div class="media-content">
                     <p class="title is-4">${repo.name}</p>
-                    <p class="subtitle is-6">@Parcourir</p>
+                    <p class="subtitle is-6">@${repo.author}</p>
                   </div>
                 </div>
   
                 <div class="content">
                    ${repo.description}
                   <br />
-                  Dernière mise à jour: <time datetime="${
-                    repo.updated_at
-                  }">${dateTimeFormat.format(new Date(repo.updated_at))}</time>
+                  Dernière mise à jour: <time datetime="${repo.updated_at
+        }">${dateTimeFormat.format(new Date(repo.updated_at))}</time>
                 </div>
               </div>
             </div>
             <div class="box has-text-centered">
-              <button class="button fav-btn is-light"   img-id="${repo.id}"></button>
+              <button class="button fav-btn is-light" img-id="${repo.id}"></button>
             </div>
           </div>`;
     });
@@ -72,18 +64,14 @@ function afficher(json) {
 
   document.querySelectorAll(".fav-btn").forEach(b => {
     b.addEventListener("click", (e) => {
-      console.log(e);
       let id = e.target.getAttribute("img-id");
       let isFavori = e.target.getAttribute("is-favori");
-      console.log(e.target.getAttribute("is-favori"));
-  
-      toggleFavori(id, isFavori).then(_ => {
-        if (isFavori == "true"){
-          console.log("Aj")
+
+      toggleFavori(id).then(_ => {
+        if (isFavori == "true") {
           e.target.setAttribute("is-favori", false);
           e.target.innerHTML = "<i class='fas fa-heart'></i>";
         } else {
-          console.log("Ret")
           e.target.setAttribute("is-favori", true);
           e.target.innerHTML = "<i class='far fa-heart'></i>";
         }
@@ -93,9 +81,6 @@ function afficher(json) {
 }
 
 function afficherFavori(json) {
-  console.log("Favoris:");
-  console.log(json);
-
   buttons = document.querySelectorAll(".fav-btn");
   buttons.forEach((b) => {
     if (json.indexOf(b.getAttribute("img-id")) != -1) {
@@ -107,10 +92,6 @@ function afficherFavori(json) {
     }
   });
 }
-
-document.addEventListener("DOMContentLoaded", function () {
-
-});
 
 window.addEventListener("beforeinstallprompt", (e) => {
   e.preventDefault();
