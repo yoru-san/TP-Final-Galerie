@@ -64,16 +64,23 @@ function afficher(json) {
 
   document.querySelectorAll(".fav-btn").forEach(b => {
     b.addEventListener("click", (e) => {
-      let id = e.target.getAttribute("img-id");
-      let isFavori = e.target.getAttribute("is-favori");
+      let target = e.target;
+      while(target.localName !== "button") {
+        target = target.parentNode
+      };
+      window.target = target;
+      
+      console.log(target);
+      let id = target.getAttribute("img-id");
+      let isFavori = target.getAttribute("is-favori");
 
       toggleFavori(id).then(_ => {
         if (isFavori == "true") {
-          e.target.setAttribute("is-favori", false);
-          e.target.innerHTML = "<i class='fas fa-heart'></i>";
+          target.setAttribute("is-favori", false);
+          target.innerHTML = "<i class='far fa-heart'></i>";
         } else {
-          e.target.setAttribute("is-favori", true);
-          e.target.innerHTML = "<i class='far fa-heart'></i>";
+          target.setAttribute("is-favori", true);
+          target.innerHTML = "<i class='fas fa-heart'></i>";
         }
       });
     });
@@ -88,6 +95,7 @@ function afficherFavori(json) {
       b.innerHTML = "<i class='fas fa-heart'></i>";
     } else {
       b.setAttribute("is-favori", false);
+      // b.innerHTML = "<i class='far fa-heart'></i>";
       b.innerHTML = "<i class='far fa-heart'></i>";
     }
   });
