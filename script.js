@@ -59,9 +59,9 @@ function afficher(json) {
                 </div>
               </div>
             </div>
-            <button class="button fav-btn" img-id="${
-              repo.id
-            }">Ajouter favori</button>
+            <div class="box has-text-centered">
+              <button class="button fav-btn is-light"   img-id="${repo.id}"></button>
+            </div>
           </div>`;
     });
     html += "</div>";
@@ -81,11 +81,11 @@ function afficher(json) {
         if (isFavori == "true"){
           console.log("Aj")
           e.target.setAttribute("is-favori", false);
-          e.target.innerHTML = "Ajouter favori";
+          e.target.innerHTML = "<i class='fas fa-heart'></i>";
         } else {
           console.log("Ret")
           e.target.setAttribute("is-favori", true);
-          e.target.innerHTML = "Retirer favori";
+          e.target.innerHTML = "<i class='far fa-heart'></i>";
         }
       });
     });
@@ -100,10 +100,10 @@ function afficherFavori(json) {
   buttons.forEach((b) => {
     if (json.indexOf(b.getAttribute("img-id")) != -1) {
       b.setAttribute("is-favori", true);
-      b.innerHTML = "Retirer favori";
+      b.innerHTML = "<i class='fas fa-heart'></i>";
     } else {
       b.setAttribute("is-favori", false);
-      b.innerHTML = "Ajouter favori";
+      b.innerHTML = "<i class='far fa-heart'></i>";
     }
   });
 }
