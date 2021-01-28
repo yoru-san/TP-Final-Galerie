@@ -45,7 +45,6 @@ function toggleFavori(id) {
             .then((reg) => reg.sync.register("syncFavoris"))
             .then((_) => {
               console.log("sync registered");
-              console.log(data);
             });
         });
       });
@@ -58,7 +57,7 @@ async function send() {
 
 
   register.addEventListener("updatefound", () => {
-    const installing = reg.installing;
+    const installing = register.installing;
     installing.addEventListener("statechange", () => {
       if (installing.state === "installed") {
         console.log("Votre service worker a été mis à jour! Veuillez rafraîchir la page");
